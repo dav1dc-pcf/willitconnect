@@ -4,7 +4,7 @@ buildscript {
     }
     repositories {
         mavenCentral()
-        maven { url "http://jcenter.bintray.com" }
+        maven { url "https://jcenter.bintray.com" }
         maven { url "https://repo.spring.io/snapshot" }
         maven { url "https://repo.spring.io/milestone" }
         maven { url "https://plugins.gradle.org/m2/" }
@@ -12,13 +12,16 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("com.moowork.gradle:gradle-node-plugin:1.2.0")
-        classpath("com.homedepot.gitprops:GitPropsPlugin:1.0.8")
+        classpath("com.homedepot.gitprops:GitPropsPlugin:1.0.1")
     }
 
 }
 
 plugins {
+    id 'java'
     id 'com.gradle.build-scan' version '1.0'
+    id 'org.springframework.boot' version '2.5.0'
+    id "com.homedepot.gitprops" version "1.0.1"
 }
 
 buildScan {
@@ -32,6 +35,8 @@ apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'com.moowork.node'
 apply plugin: 'com.homedepot.gitprops'
+
+apply plugin: 'io.spring.dependency-management'
 
 jar {
     baseName = 'willitconnect'
@@ -47,11 +52,16 @@ repositories {
 }
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-actuator")
-    compile("org.springframework.boot:spring-boot-starter-web")
-    compile("org.json:json:20170516")
-    testCompile("org.springframework.boot:spring-boot-starter-test")
-    testCompile("org.powermock:powermock-mockito-release-full:1.6.4")
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.json:json:20170516")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.powermock:powermock-mockito-release-full:1.6.4")
+
+    implementation("log4j:log4j:1.2.17")
 }
 
 task webpack(type: NodeTask) {
@@ -68,10 +78,6 @@ eclipse {
          containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
          containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8'
     }
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.4.1'
 }
 
 project.tasks.processResources.dependsOn('npmInstall')
